@@ -68,7 +68,7 @@ pcvery.start = function(){
 		pcvery.IsOpen = true;
 		pcvery.success(event);
 		//调用心跳
-		setTimeout(pcvery.heartbeat,pcvery.PingPongLongTime);
+		pcvery.heartbeat();
 	};
 	//关闭了
 	pcvery.socket.onclose = function (event) {
