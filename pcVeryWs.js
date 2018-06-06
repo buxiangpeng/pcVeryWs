@@ -10,9 +10,11 @@ pcvery.PingErrorlongTime = 3000;
 //是否能正常
 pcvery.IsOpen = false;
 //心跳间隔
-pcvery.PingPongLongTime = 3000;
+pcvery.PingPongLongTime = 20000;
+//心跳定时器
+pcvery.timeout = null;
 //重连间隔
-pcvery.ReconnectLongTime = 3000;
+pcvery.ReconnectLongTime = 2000;
 
 //初始化----可以外部调用
 pcvery.ws = function(url,param,success,message,close,pingSuccess){
@@ -58,7 +60,7 @@ pcvery.start = function(){
 				//调用ping-pong成功，并传入延迟值
 				pcvery.pingSuccess(pinglongTime);
 			}
-			setTimeout(pcvery.heartbeat,pcvery.PingPongLongTime);
+			pcvery.timeout = setTimeout(pcvery.heartbeat,pcvery.PingPongLongTime);
 			return false;
 		}
 		pcvery.message(msg);
@@ -74,6 +76,7 @@ pcvery.start = function(){
 	pcvery.socket.onclose = function (event) {
 		pcvery.IsOpen = false;
 		pcvery.close(event);
+		pcvery.PinglongTime = 0;
 		 //调用重连
 		setTimeout( pcvery.reconnect,pcvery.ReconnectLongTime);
 	   
@@ -81,6 +84,7 @@ pcvery.start = function(){
 	//异常，自动关闭并开始重连
 	pcvery.socket.onerror = function (event) {
 		pcvery.IsOpen = false;
+		pcvery.PinglongTime = 0;
 	}
 }
 //结束----可以外部调用
@@ -111,12 +115,17 @@ pcvery.heartbeat = function(){
 		return false;
 	}
 	//执行心跳
+	if(pcvery.timeout != null){
+		window.clearTimeout(pcvery.timeout);
+	}
 	pcvery.PinglongTime = new Date().getTime();
 	pcvery.socket.send(pcvery.PING);
 }
 //重连----禁止外部调用
 pcvery.reconnect = function(){
-	pcvery.start();
+	if(pcvery.socket != null){
+		pcvery.start();
+	}
 }
 //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
 window.onbeforeunload = function () {
