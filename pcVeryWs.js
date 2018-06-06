@@ -58,24 +58,32 @@ pcvery.start = function(){
 				return false;
 			}else{
 				//调用ping-pong成功，并传入延迟值
-				pcvery.pingSuccess(pinglongTime);
+				if(pcvery.pingSuccess != null){
+					pcvery.pingSuccess(pinglongTime);
+				}
 			}
 			pcvery.timeout = setTimeout(pcvery.heartbeat,pcvery.PingPongLongTime);
 			return false;
 		}
-		pcvery.message(msg);
+		if(pcvery.message != null){
+			pcvery.message(msg);
+		}
 	};
 	//打开了
 	pcvery.socket.onopen = function (event) {
 		pcvery.IsOpen = true;
-		pcvery.success(event);
+		if(pcvery.success != null){
+			pcvery.success(event);
+		}
 		//调用心跳
 		pcvery.heartbeat();
 	};
 	//关闭了
 	pcvery.socket.onclose = function (event) {
 		pcvery.IsOpen = false;
-		pcvery.close(event);
+		if(pcvery.close != null){
+			pcvery.close(event);
+		}
 		pcvery.PinglongTime = 0;
 		 //调用重连
 		setTimeout( pcvery.reconnect,pcvery.ReconnectLongTime);
