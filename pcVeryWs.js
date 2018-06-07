@@ -31,7 +31,7 @@ pcvery.ws = function(url,param,success,message,close,pingSuccess){
 pcvery.start = function(){
 	//组装url
 	var newUrl = "";
-	if(param){
+	if(pcvery.param){
 		newUrl =pcvery.url + "?" + pcvery.param;
 	}else{
 		newUrl = pcvery.url;
